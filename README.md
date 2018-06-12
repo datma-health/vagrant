@@ -1,7 +1,13 @@
-## Vagrant files for a Spark-Hadoop VM Cluster to test software from Omics Data Automation, Inc.
+### Vagrant files for a Spark-Hadoop VM Cluster to test software from Omics Data Automation, Inc.
 
-## License
+### License
 See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
+
+#### Prerequisites
+Vagrant and Virtual Box installations for your host. 
+
+#### Supported Platforms
+Centos 7 is the only target OS supported.
 
 Open [Vagrantfile](Vagrantfile) and change the variables - ip, memory, cpus, num_slaves, slave_memory and slave_cpus. The default is to start up a master-only Spark-Hadoop cluster. Also, take note of the default forwarded port numbers especially if you have other servers and/or VMs using the ports.
 
