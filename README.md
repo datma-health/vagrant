@@ -1,4 +1,5 @@
 ### Vagrant files for a Spark-Hadoop VM Cluster to test software from Omics Data Automation, Inc.
+Not suited for production environments.
 
 ### License
 See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
@@ -14,7 +15,7 @@ vagrant plugin install vagrant-vbguest
 ```
 
 #### Supported Platforms
-Centos 7 is the only target OS supported. Note that this vagrant configuration is not suited for production environments.
+Centos 7 is the only target OS supported.
 
 Open [Vagrantfile](Vagrantfile) and change the variables - ip, memory, cpus, num_slaves, slave_memory and slave_cpus. The default is to start up a master-only Spark-Hadoop cluster. Also, take note of the default forwarded port numbers especially if you have other servers and/or VMs using the ports.
 ```ruby
