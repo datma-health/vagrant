@@ -4,7 +4,14 @@
 See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
 
 #### Prerequisites
-Vagrant and Virtual Box installations for your host. 
+[Vagrant](https://www.vagrantup.com/downloads.html) and [VirtualBox](https://www.virtualbox.org/wiki/Downloads) installations for your host.
+
+Before using a Vagrant machine with the shared folder functionality, you should install the 
+vagrant-vbguest plugin:
+```
+#!bash
+vagrant plugin install vagrant-vbguest
+```
 
 #### Supported Platforms
 Centos 7 is the only target OS supported.
