@@ -32,7 +32,7 @@ $slave_cpus = 2
 ```
 
 Invoke [vagrant_VM_configure](vagrant_VM_configure.sh) to install the spark-hadoop cluster. 
-```
+```shell
 #!bash
 ./vagrant_VM_configure.sh
 ```
@@ -56,10 +56,38 @@ drwxr-xr-x   - vagrant supergroup          0 2018-06-12 14:48 /tmp
 
 ```
 
+The Vagrant target VM and the host machine share two folders.
+* host folder containing Vagrantfile is mapped to /vagrant in the target VM
+* parent folder to the folder containing Vagrantfile is mapped to /source in the target VM.
+```shell
+~/vagrant: vagrant ssh
+[vagrant@oda-master ~]$ ls /vagrant
+build_gatk4.sh             disable_selinux.sh             install_opencv_prereqs.sh  provision.sh                  README.md       Vagrantfile~
+build_genomicsdb_distr.sh  hadoop-config                  LICENSE.md                 provision.sh~                 reset_eth1.sh   vagrant_VM_configure.sh
+build_genomicsdb.sh        install_gatk4_prereqs.sh       local                      provision_spark_hadoop.sh     spark_setup.sh  vagrant_VM_configure.sh~
+build_opencv.sh            install_genomicsdb_prereqs.sh  master_id_rsa.pub          pseudo-cluster-hadoop-config  Vagrantfile
+[vagrant@oda-master ~]$ ls /source/vagrant
+build_gatk4.sh             disable_selinux.sh             install_opencv_prereqs.sh  provision.sh                  README.md       Vagrantfile~
+build_genomicsdb_distr.sh  hadoop-config                  LICENSE.md                 provision.sh~                 reset_eth1.sh   vagrant_VM_configure.sh
+build_genomicsdb.sh        install_gatk4_prereqs.sh       local                      provision_spark_hadoop.sh     spark_setup.sh  vagrant_VM_configure.sh~
+build_opencv.sh            install_genomicsdb_prereqs.sh  master_id_rsa.pub          pseudo-cluster-hadoop-config  Vagrantfile
+[vagrant@oda-master ~]$ 
+```
+
 Install and build scripts are currently available for 
 * [GenomicsDB](https://github.com/nalinigans/GenomicsDB), 
 * [GATK4](https://github.com/broadinstitute/gatk) and 
 * [OpenCV](https://opencv.org).
 
-Check out the settings at the head of respective scripts to make any changes in versions, build and install parameters before invoking them.
+Check out the settings at the head of respective scripts to make any changes in versions, build and install parameters before invoking them. All scripts are invokable from a vagrant shell. 
+
+For example, invoke build_opencv.sh to install prerequisites, build and install OpenCV into your Vagrant VM instance. Bring up a new instance of vagrant shell to get your apps locate the OpenCV libraries and binaries.
+```shell
+~/vagrant: vagrant ssh
+[vagrant@oda-master ~]$ cd /vagrant
+[vagrant@oda-master vagrant]$ ./build_opencv.sh
+...
+```
+
+
   
