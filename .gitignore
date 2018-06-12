@@ -1,0 +1,14 @@
+.vagrant/
+local/
+master_id_rsa.pub
+*bcf*
+*log*
+human_g1k_v37*
+*vcf
+*swp
+
+#emacs
+*~
+\#*\#
+.\#*
+TAGS

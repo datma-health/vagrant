@@ -1,0 +1,82 @@
+hadoop/etc/hadoop
+
+Account directory /opt/hadoop
+
+etc/hadoop/core-site.xml
+   <property>
+     <name>fs.defaultFS</name>
+     <value>hdfs://oda-master:9000/</value>
+   </property>
+
+etc/hadoop/hdfs-site.xml
+  <property>
+    <name>dfs.data.dir</name>
+    <value>file:///opt/volume/datanode</value>
+  </property>
+  <property>
+    <name>dfs.name.dir</name>
+    <value>file:///opt/volume/namenode</value>
+  </property>
+
+
+Create directories /opt/volume/namenode and /opt/volume/datanode
+chown -R vagrant:vagrant /opt/volume
+
+etc/hadoop/mapred-site.xml
+ cp mapred-site.xml.template mapred-site.xml
+ <property>
+     <name>mapreduce.framework.name</name>
+     <value>yarn</value>
+  </property>
+
+etc/hadoop/yarn-site.xml
+  <property>
+    <name>yarn.nodemanager.aux-services</name>
+    <value>mapreduce_shuffle</value>
+  </property>
+
+etc/hadoop/slaves
+  replace localhost with the machine name
+
+Formatting hdfs
+1. hdfs namenode -format
+
+Starting Hadoop Cluster
+1. start-dfs.sh
+===> sudo ln -s $JAVA_HOME /usr/java/latest
+2. start-yarn.sh
+
+
+Check the services status with the following command.
+jps
+
+List of open sockets
+ss -tul
+ss -tuln #numerical output
+
+
+hdfs dfs -mkdir /test_mkdir
+hdfs dfs -put LICENSE.txt /test_mkdir
+hdfs dfs -ls /test_mkdir
+hdfs dfs -cat /test_mkdir
+hdfs dfs -cat /test_mkdir/LICENSE.txt
+hdfs dfs -help
+
+Stopping Hadoop Cluster
+1. stop-yarn.sh
+2. stop-dfs.sh
+
+
+To auto-start the Hadoop Cluster everytime, use /etc/rc.local file and add the following lines -
+#!/bin/bash
+touch /var/lock/subsys/local
+$HADOOP_HOME/start-dfs.sh
+$HADOOP_HOME/start-yarn.sh
+exit 0
+Add +x perm to rc.local
+
+Check by issuing
+systemctl enable rc-local
+systemctl start rc-local
+systemctl statuys rc-local
+
