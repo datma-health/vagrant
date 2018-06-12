@@ -6,6 +6,7 @@ master_id_rsa.pub
 human_g1k_v37*
 *vcf
 *swp
+.vagrant.basic.provision
 
 #emacs
 *~

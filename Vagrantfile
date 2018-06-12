@@ -33,7 +33,7 @@ Vagrant.configure("2") do |config|
   #config.ssh.insert_key = false
 
   config.vm.define "master", primary: true do |master|
-    master.vm.hostname = "oda-master-imageds"
+    master.vm.hostname = "oda-master"
 
     # Spark Web UI
     master.vm.network "forwarded_port", guest:8080, host:8080

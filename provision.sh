@@ -20,5 +20,6 @@ export JRE_HOME=/usr/lib/jvm/jre
 
 wget -q http://downloads.lightbend.com/scala/2.11.8/scala-2.11.8.rpm
 yum install -y -q scala-2.11.8.rpm
+rm scala-2.11.8.rpm
 
 source /vagrant/provision_spark_hadoop.sh

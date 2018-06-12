@@ -44,7 +44,7 @@ cd opencv-$OPENCV_VERSION
 mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR ..
-make && make install
+make && sudo make install
 
 echo "Setting up OpenCV environment ..."
 echo "#!/bin/sh" > opencv.sh
