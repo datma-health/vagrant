@@ -37,7 +37,7 @@ Invoke [vagrant_VM_configure](vagrant_VM_configure.sh) to install the spark-hado
 ./vagrant_VM_configure.sh
 ```
 
-To test HDFS, bring up a vagrant shell(vagrant ssh from the folder containing Vagrantfile on the host machine)
+To test HDFS and Spark, bring up a vagrant shell(vagrant ssh from the folder containing Vagrantfile on the host machine)
 ```shell
 ~/vagrant: vagrant ssh
 [vagrant@oda-master ~]$ which start-dfs.sh
