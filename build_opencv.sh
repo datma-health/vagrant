@@ -48,7 +48,7 @@ make && sudo make install
 
 echo "Setting up OpenCV environment ..."
 echo "#!/bin/sh" > opencv.sh
-echo "if [[ -e $PKG_CONFIG_PATH ]]; then" >> opencv.sh 
+echo "if [[ -e \$PKG_CONFIG_PATH ]]; then" >> opencv.sh
 echo "  export PKG_CONFIG_PATH=\$PKG_CONFIG_PATH:$INSTALL_DIR/lib/pkgconfig" >> opencv.sh
 echo "else" >> opencv.sh
 echo "  export PKG_CONFIG_PATH=$INSTALL_DIR/lib/pkgconfig" >> opencv.sh
