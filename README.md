@@ -14,7 +14,7 @@ vagrant plugin install vagrant-vbguest
 ```
 
 #### Supported Platforms
-Centos 7 is the only target OS supported.
+Centos 7 is the only target OS supported. Note that this vagrant configuration is not suited for production environments.
 
 Open [Vagrantfile](Vagrantfile) and change the variables - ip, memory, cpus, num_slaves, slave_memory and slave_cpus. The default is to start up a master-only Spark-Hadoop cluster. Also, take note of the default forwarded port numbers especially if you have other servers and/or VMs using the ports.
 ```ruby
