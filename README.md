@@ -31,6 +31,10 @@ $slave_cpus = 2
 ```
 
 Invoke [vagrant_VM_configure](vagrant_VM_configure.sh) to install the spark-hadoop cluster. 
+```
+#!bash
+./vagrant_VM_configure.sh
+```
 
 Install and build scripts are currently available for 
 * [GenomicsDB](https://github.com/nalinigans/GenomicsDB), 
