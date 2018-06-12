@@ -87,6 +87,12 @@ For example, invoke build_opencv.sh to install prerequisites, build and install 
 [vagrant@oda-master ~]$ cd /vagrant
 [vagrant@oda-master vagrant]$ ./build_opencv.sh
 ...
+- Installing: /usr/local/bin/opencv_version
+-- Set runtime path of "/usr/local/bin/opencv_version" to "/usr/local/lib64"
+Setting up OpenCV environment ...
+ENV_FILE=/etc/profile.d/opencv.sh
+Installing OpenCV DONE
+[vagrant@oda-master vagrant]$
 ```
 
 
