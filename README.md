@@ -37,6 +37,25 @@ Invoke [vagrant_VM_configure](vagrant_VM_configure.sh) to install the spark-hado
 ./vagrant_VM_configure.sh
 ```
 
+To test HDFS, bring up a vagrant shell(vagrant ssh from the folder containing Vagrantfile on the host machine)
+```shell
+~/vagrant: vagrant ssh
+[vagrant@oda-master ~]$ which start-dfs.sh
+/usr/local/hadoop/sbin/start-dfs.sh
+[vagrant@oda-master ~]$ start-dfs.sh
+Starting namenodes on [oda-master]
+The authenticity of host 'oda-master (127.0.0.1)' can't be established.
+...
+[vagrant@oda-master ~]$ hdfs dfs -mkdir /tmp
+18/06/12 14:48:48 INFO gcs.GoogleHadoopFileSystemBase: GHFS version: 1.8.1-hadoop2
+[vagrant@oda-master ~]$ hdfs dfs -ls /
+18/06/12 14:48:54 INFO gcs.GoogleHadoopFileSystemBase: GHFS version: 1.8.1-hadoop2
+Found 1 items
+drwxr-xr-x   - vagrant supergroup          0 2018-06-12 14:48 /tmp
+[vagrant@oda-master ~]$ 
+
+```
+
 Install and build scripts are currently available for 
 * [GenomicsDB](https://github.com/nalinigans/GenomicsDB), 
 * [GATK4](https://github.com/broadinstitute/gatk) and 
