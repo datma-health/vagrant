@@ -15,7 +15,7 @@ $memory = 4096
 $cpus = 2
 
 #number of slave instances have to be less than 10
-$num_slaves = 0 
+$num_slaves = 0
 $slave_memory = 2048
 $slave_cpus = 2
 
