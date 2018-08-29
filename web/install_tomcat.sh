@@ -3,7 +3,7 @@
 yum install -y net-tools
 
 wget -q http://mirrors.ocf.berkeley.edu/apache/tomcat/tomcat-8/v8.5.33/bin/apache-tomcat-8.5.33.tar.gz
-tar -zxvf apache-tomcat-8.5.33.tar.gz
+tar -xf apache-tomcat-8.5.33.tar.gz
 
 echo "Run apache-tomcat-8.5.33/bin/startup.sh to start Tomcat"
 
