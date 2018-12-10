@@ -10,7 +10,18 @@ require 'ipaddr'
 # Brian: 20s
 # Michael: 80s
 # Melvin: 30s
-$ip = "192.168.33.92"
+# Nalini : 40s
+# Scott : 50s
+# Clay : 60s
+# Hollis : 80s
+# others : 90s
+$user = ENV['USER']
+case $user 
+when "nalini" 
+  $ip = "192.168.33.20"
+else
+  $ip = "192.168.33.90"
+end
 $memory = 4096
 $cpus = 2
 
@@ -25,14 +36,7 @@ $slave_cpus = 2
 Vagrant.configure("2") do |config|
   config.vm.box = "centos/7"
 
-  config.vbguest.auto_update = false
-  
-  # do NOT download the iso file from a webserver
-  config.vbguest.no_remote = true	
-
-  #config.ssh.insert_key = false
-
-  config.vm.define "master", primary: true do |master|
+  config.vm.define "master_"+$user, primary: true do |master|
     master.vm.hostname = "oda-master"
 
     # Spark Web UI
@@ -56,8 +60,6 @@ Vagrant.configure("2") do |config|
       v.memory = $memory
       v.cpus = $cpus
       v.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
-      v.customize ["modifyvm", :id, "--nic2", "hostonly"]
-      v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
     end
   end
 
@@ -76,23 +78,28 @@ Vagrant.configure("2") do |config|
         v.memory = $memory
         v.cpus = $cpus
         v.customize ["modifyvm", :id, "--cpuexecutioncap", "50"]
-        v.customize ["modifyvm", :id, "--nic2", "hostonly"]
-        v.customize ["modifyvm", :id, "--nicpromisc2", "allow-all"]
       end
     end
   end
 
-  # Workaround for vbguest not really working with VirtualBox. Ugly!!
-  # Start vagrant up followed 
-  if !File.exist?(".vagrant.basic.provision")
-    # Provision General Prerequisites
-    config.vm.provision :shell, inline: "yum install -y -q kernel-devel"  
-    config.vm.provision :shell, path: "disable_selinux.sh"
-  else
-    # Add synched folder and continue with the rest of provisioning
-    config.vm.synced_folder "..", "/source"
-    config.vm.provision :shell, path: "provision.sh", env: {"INSTALL_HADOOP"=>"true", "MASTER_IP"=>$ip, "NUM_SLAVES"=>$num_slaves}
-  end
+  # Provision General Prerequisites
+  config.vm.provision :shell, inline: "yum update -y -q"
+  config.vm.provision :shell, inline: "yum install -y -q kernel-devel"
+  config.vm.provision :shell, inline: "yum install -y -q  xorg-x11-drivers xorg-x11-utils"
+  config.vm.provision :shell, inline: "yum update -y -q"
+  config.vm.provision :shell, path: "disable_selinux.sh"
+
+  config.vm.provision :shell, path: "provision.sh", env: {"INSTALL_HADOOP"=>"true", "MASTER_IP"=>$ip, "NUM_SLAVES"=>$num_slaves}
+
+  # Uncomment the lines from if File.exist... if you like synced folders at your own risk :-). 
+  #   Or use "vagrant plugin install vagrant-scp" to scp files into the vagrant VM
+  #      Invoke "vagrant help scp" for scp options. 
+
+  # if File.exist?(".vagrant.basic.provision")
+  #   config.vm.synced_folder "..", "/source"
+  # else
+  #   config.vm.provision :shell, inline: "touch .vagrant.basic.provision"
+  # end
 
   config.ssh.forward_agent = true
   config.ssh.forward_x11 = true

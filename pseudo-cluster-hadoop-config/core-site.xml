@@ -28,7 +28,7 @@
   </property>
   <property>
     <name>google.cloud.auth.service.account.json.keyfile</name>
-    <value>/source/GCS.json</value>
+    <value>/home/vagrant/GCS.json</value>
   </property>
   <property>
     <name>fs.gs.working.dir</name>

@@ -8,12 +8,15 @@ SPARK=spark-$SPARK_VERSION-bin-hadoop$HADOOP_VER
 INSTALL_DIR=/usr/local
 SPARK_DIR=$INSTALL_DIR/$SPARK
 
-SOURCE_DIR=/source/vagrant
+SOURCE_DIR=/vagrant
 SOURCE_LOCAL_DIR=$SOURCE_DIR/local
 
 SPARK_LOCAL_DIR=/usr/local/spark
 
 CURRENT_DIR=`pwd`
+
+#Uncomment if you want a real hadoop cluster instead of a pseudo configured cluster
+#INSTALL_HADOOP_CLUSTER=True
 
 echo "Starting Spark-Hadoop Installation..."
 
@@ -129,23 +132,22 @@ if [[ $INSTALL_HADOOP == "true" ]]; then
 		sudo mv hadoop.sh /etc/profile.d/hadoop.sh
 		source /etc/profile.d/hadoop.sh
 
-#if [[ $INSTALL_HADOOP_CLUSTER == "true" ]]; then
-		# setup initial hadoop configuration files for fully distributed operation
-		cp -fr /vagrant/hadoop-config/* $HADOOP_LOCAL_DIR/etc/hadoop
-#else
+          if [ -z $INSTALL_HADOOP_CLUSTER ]; then
 		# setup hadoop configuration as a pseudo-distributed cluster on a single node
 		cp -fr /vagrant/pseudo-cluster-hadoop-config/* $HADOOP_LOCAL_DIR/etc/hadoop
-#fi
+          else
+		# setup initial hadoop configuration files for fully distributed operation
+		mkdir /opt/hadoop
+                chown -R vagrant:vagrant /opt/hadoop
+                mkdir /opt/volume
+                mkdir /opt/volume/namenode
+                mkdir /opt/volume/datanode
+                chown -R vagrant:vagrant /opt/volume
+                cp -fr /vagrant/hadoop-config/* $HADOOP_LOCAL_DIR/etc/hadoop
+          fi
 
 		# create a logs directory, otherwise there seem to be errors
 		sudo -u vagrant mkdir $HADOOP_LOCAL_DIR/logs
-
-		mkdir /opt/hadoop
-		chown -R vagrant:vagrant /opt/hadoop
-		mkdir /opt/volume
-		mkdir /opt/volume/namenode
-		mkdir /opt/volume/datanode
-		chown -R vagrant:vagrant /opt/volume
 
 		# Installing GCS Connector
 		wget -q https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-latest-hadoop2.jar
@@ -158,10 +160,10 @@ if [[ $INSTALL_HADOOP == "true" ]]; then
 		# Setting HADOOP_CONF_DIR in Spark env hooks Spark into HDFS
 		echo "HADOOP_CONF_DIR=$HADOOP_LOCAL_DIR/etc/hadoop" >> ${SPARK_HOME}/conf/spark-env.sh
 
-#if [[ `hostname` == *master* ]]; then
-		. /etc/profile.d/hadoop.sh
-		sudo -u vagrant $HADOOP_LOCAL_DIR/bin/hdfs namenode -format
-#fi
+		if [[ `hostname` == *master* ]]; then
+			. /etc/profile.d/hadoop.sh
+			sudo -u vagrant $HADOOP_LOCAL_DIR/bin/hdfs namenode -format
+		fi
 
 
 		echo "Setting up spark-hadoop environment DONE"
