@@ -6,6 +6,9 @@ yum update -y -q
 yum install -y -q wget
 yum install -y -q git
 
+echo "#!/bin/sh" >> /etc/profile.d/git.sh
+echo "git config --global color.ui auto" >> git.sh
+
 yum install -y xauth
 if [ ! -f /home/vagrant/.Xauthority ]; then
 	sudo -u vagrant touch /home/vagrant/.Xauthority
