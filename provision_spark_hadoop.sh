@@ -1,9 +1,9 @@
 #!/bin/bash
 
-SPARK_VERSION=2.0.2
-HADOOP_VER=2.7
-HADOOP_MICRO_VER=6
-SPARK=spark-$SPARK_VERSION-bin-hadoop$HADOOP_VER
+SPARK_VERSION=2.4.0
+HADOOP_VER=2.9
+HADOOP_MICRO_VER=2
+SPARK=spark-$SPARK_VERSION-bin-hadoop2.7
 
 INSTALL_DIR=/usr/local
 SPARK_DIR=$INSTALL_DIR/$SPARK
@@ -28,7 +28,7 @@ else
 	if [ ! -f $SOURCE_LOCAL_DIR/$SPARK.tgz ]; then
 		mkdir $SOURCE_LOCAL_DIR
 		cd $SOURCE_LOCAL_DIR
-		wget -q http://d3kbcqa49mib13.cloudfront.net/$SPARK.tgz
+		wget -nv --trust-server-names "https://www.apache.org/dyn/mirrors/mirrors.cgi?action=download&filename=spark/spark-$SPARK_VERSION/$SPARK.tgz"
 	fi
 	cd $INSTALL_DIR
 	tar -zvxf $SOURCE_LOCAL_DIR/$SPARK.tgz
@@ -94,7 +94,7 @@ if [[ $INSTALL_HADOOP == "true" ]]; then
 		echo "Installing hadoop..."
 		if [ ! -f $SOURCE_LOCAL_DIR/$HADOOP.tar ]; then
 			cd $SOURCE_LOCAL_DIR
-			wget -q http://www-eu.apache.org/dist/hadoop/common/$HADOOP/$HADOOP.tar.gz
+			wget -nv --trust-server-names "https://www.apache.org/dyn/mirrors/mirrors.cgi?action=download&filename=hadoop/common/$HADOOP/$HADOOP.tar.gz"
 			gunzip $HADOOP.tar.gz
 		fi
 		cd $INSTALL_DIR
@@ -132,25 +132,25 @@ if [[ $INSTALL_HADOOP == "true" ]]; then
 		sudo mv hadoop.sh /etc/profile.d/hadoop.sh
 		source /etc/profile.d/hadoop.sh
 
-          if [ -z $INSTALL_HADOOP_CLUSTER ]; then
-		# setup hadoop configuration as a pseudo-distributed cluster on a single node
-		cp -fr /vagrant/pseudo-cluster-hadoop-config/* $HADOOP_LOCAL_DIR/etc/hadoop
-          else
+		if [ -z $INSTALL_HADOOP_CLUSTER ]; then
+			#setup hadoop configuration as a pseudo-distributed cluster on a single node
+			cp -fr /vagrant/pseudo-cluster-hadoop-config/* $HADOOP_LOCAL_DIR/etc/hadoop
+		else
 		# setup initial hadoop configuration files for fully distributed operation
-		mkdir /opt/hadoop
-                chown -R vagrant:vagrant /opt/hadoop
-                mkdir /opt/volume
-                mkdir /opt/volume/namenode
-                mkdir /opt/volume/datanode
-                chown -R vagrant:vagrant /opt/volume
-                cp -fr /vagrant/hadoop-config/* $HADOOP_LOCAL_DIR/etc/hadoop
-          fi
+			mkdir /opt/hadoop
+			chown -R vagrant:vagrant /opt/hadoop
+			mkdir /opt/volume
+			mkdir /opt/volume/namenode
+			mkdir /opt/volume/datanode
+			chown -R vagrant:vagrant /opt/volume
+			cp -fr /vagrant/hadoop-config/* $HADOOP_LOCAL_DIR/etc/hadoop
+		fi
 
 		# create a logs directory, otherwise there seem to be errors
 		sudo -u vagrant mkdir $HADOOP_LOCAL_DIR/logs
 
 		# Installing GCS Connector
-		wget -q https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-latest-hadoop2.jar
+		wget -nv https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-latest-hadoop2.jar
 		cp gcs-connector-latest-hadoop2.jar ${HADOOP_HOME}/share/hadoop/common
 		cp gcs-connector-latest-hadoop2.jar ${SPARK_HOME}/jars
 		rm gcs-connector-latest-hadoop2.jar
@@ -161,10 +161,12 @@ if [[ $INSTALL_HADOOP == "true" ]]; then
 		echo "HADOOP_CONF_DIR=$HADOOP_LOCAL_DIR/etc/hadoop" >> ${SPARK_HOME}/conf/spark-env.sh
 
 		if [[ `hostname` == *master* ]]; then
+			echo "Configuring/Starting hadoop"
 			. /etc/profile.d/hadoop.sh
-			sudo -u vagrant $HADOOP_LOCAL_DIR/bin/hdfs namenode -format
+			sudo -u vagrant JAVA_HOME=$JAVA_HOME $HADOOP_LOCAL_DIR/bin/hdfs namenode -format
+			sudo -u vagrant JAVA_HOME=$JAVA_HOME $HADOOP_LOCAL_DIR/sbin/start-dfs.sh
+			echo "Configuring/Starting hadoop DONE"
 		fi
-
 
 		echo "Setting up spark-hadoop environment DONE"
 	fi
@@ -172,3 +174,4 @@ if [[ $INSTALL_HADOOP == "true" ]]; then
 fi
 
 cd $CURRENT_DIR
+
