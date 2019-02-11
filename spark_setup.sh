@@ -11,7 +11,8 @@ if [[ `hostname` == *master* ]]; then
   cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
   chmod 0600 ~/.ssh/authorized_keys
   ssh-keyscan -H localhost >> ~/.ssh/known_hosts &&
-  ssh-keyscan -H "0.0.0.0" >> ~/.ssh/known_hosts
+  ssh-keyscan -H "0.0.0.0" >> ~/.ssh/known_hosts &&
+  ssh-keyscan -H "oda-master" >> ~/.ssh/known_hosts
 
   cp ~/.ssh/id_rsa.pub /source/vagrant/master_id_rsa.pub
 else
@@ -19,4 +20,4 @@ else
   cat /source/vagrant/master_id_rsa.pub >> /home/vagrant/.ssh/authorized_keys
 fi
 
-source /vagrant/reset_eth1.sh
+# source /vagrant/reset_eth1.sh

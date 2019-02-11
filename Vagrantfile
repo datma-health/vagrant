@@ -39,23 +39,20 @@ Vagrant.configure("2") do |config|
   config.vm.define "master_"+$user, primary: true do |master|
     master.vm.hostname = "oda-master"
 
-    # Spark Web UI
-    master.vm.network "forwarded_port", guest:8080, host:8080
-
-    # Hadoop port forwarding: TODO change this port if running on server
-    master.vm.network "forwarded_port", guest:9000, host:9000
-
-    # Hadoop HDFS NameNode HTTP UI
-    config.vm.network "forwarded_port", guest: 50070, host: 50070
-
-    # Hadoop YARN ResourceManager HTTP UI
-    config.vm.network "forwarded_port", guest: 8088, host: 8088
-
-    # Create a private network, which allows host-only access to the machine
-    # using a specific IP.
+    # configure Spark/Hadoop ports
+    master.vm.network "forwarded_port", guest:8080, host:8081 # Spark Web UI
+    master.vm.network "forwarded_port", guest:9000, host:9001 # Hadoop port forwarding
+    master.vm.network "forwarded_port", guest: 50070, host: 50071 # Hadoop HDFS NameNode HTTP UI
+    master.vm.network "forwarded_port", guest: 8088, host: 8089 # Hadoop Yarn ResourceManager HTTP UI
     master.vm.network "private_network", ip: $ip
 
-    config.vm.provider "virtualbox" do |v|
+    # configure ELK ports
+    master.vm.network "forwarded_port", host: 9200, guest: 9200 # Elasticsearch
+    master.vm.network "forwarded_port", host: 9300, guest: 9300 # Elasticsearch
+    master.vm.network "forwarded_port", host: 5000, guest: 5000 # Logtash
+    master.vm.network "forwarded_port", host: 5601, guest: 5601 # Kibana
+
+    master.vm.provider "virtualbox" do |v|
       v.gui = false
       v.memory = $memory
       v.cpus = $cpus
@@ -73,7 +70,7 @@ Vagrant.configure("2") do |config|
       current_ip = current_ip.succ
       slave.vm.network "private_network", ip: current_ip.to_s
 
-      config.vm.provider "virtualbox" do |v|
+      slave.vm.provider "virtualbox" do |v|
         v.gui = false
         v.memory = $memory
         v.cpus = $cpus
@@ -83,23 +80,16 @@ Vagrant.configure("2") do |config|
   end
 
   # Provision General Prerequisites
+  config.vm.provision :shell, inline: "yum clean all"
   config.vm.provision :shell, inline: "yum update -y -q"
   config.vm.provision :shell, inline: "yum install -y -q kernel-devel"
   config.vm.provision :shell, inline: "yum install -y -q  xorg-x11-drivers xorg-x11-utils"
   config.vm.provision :shell, inline: "yum update -y -q"
   config.vm.provision :shell, path: "disable_selinux.sh"
 
+  config.vm.synced_folder "..", "/source"
+
   config.vm.provision :shell, path: "provision.sh", env: {"INSTALL_HADOOP"=>"true", "MASTER_IP"=>$ip, "NUM_SLAVES"=>$num_slaves}
-
-  # Uncomment the lines from if File.exist... if you like synced folders at your own risk :-). 
-  #   Or use "vagrant plugin install vagrant-scp" to scp files into the vagrant VM
-  #      Invoke "vagrant help scp" for scp options. 
-
-  # if File.exist?(".vagrant.basic.provision")
-  #   config.vm.synced_folder "..", "/source"
-  # else
-  #   config.vm.provision :shell, inline: "touch .vagrant.basic.provision"
-  # end
 
   config.ssh.forward_agent = true
   config.ssh.forward_x11 = true
