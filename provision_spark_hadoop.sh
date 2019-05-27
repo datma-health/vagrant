@@ -18,6 +18,28 @@ CURRENT_DIR=`pwd`
 #Uncomment if you want a real hadoop cluster instead of a pseudo configured cluster
 #INSTALL_HADOOP_CLUSTER=True
 
+# retry logic from: https://docs.microsoft.com/en-us/azure/hdinsight/hdinsight-hadoop-script-actions-linux
+MAXATTEMPTS=3
+retry() {
+    local -r CMD="$@"
+    local -i ATTEMPTNUM=1
+    local -i RETRYINTERVAL=2
+
+    until $CMD
+    do
+        if (( ATTEMPTNUM == MAXATTEMPTS ))
+        then
+                echo "Attempt $ATTEMPTNUM failed. no more attempts left."
+                return 1
+        else
+                echo "Attempt $ATTEMPTNUM failed! Retrying in $RETRYINTERVAL seconds..."
+                sleep $(( RETRYINTERVAL ))
+                ATTEMPTNUM=$ATTEMPTNUM+1
+        fi
+    done
+}
+
+
 echo "Starting Spark-Hadoop Installation..."
 
 if [ -d $SPARK_DIR ]; then
@@ -28,7 +50,7 @@ else
 	if [ ! -f $SOURCE_LOCAL_DIR/$SPARK.tgz ]; then
 		mkdir $SOURCE_LOCAL_DIR
 		cd $SOURCE_LOCAL_DIR
-		wget -nv --trust-server-names "https://www.apache.org/dyn/mirrors/mirrors.cgi?action=download&filename=spark/spark-$SPARK_VERSION/$SPARK.tgz"
+		retry wget -nv --trust-server-names "https://archive.apache.org/dist/spark/spark-$SPARK_VERSION/$SPARK.tgz"
 	fi
 	cd $INSTALL_DIR
 	tar -zvxf $SOURCE_LOCAL_DIR/$SPARK.tgz
