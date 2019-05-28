@@ -36,7 +36,7 @@ install_protobuf() {
   mkdir $PROTOBUF_DIR
   cd $PROTOBUF_DIR
   git clone -b $PROTOBUF_VER --single-branch https://github.com/google/protobuf.git && cd protobuf
-  if [ -f /vagrant/protobuf-${PROTOBUF-VER}.autogen.sh.patch ]; then
+  if [ -f /vagrant/protobuf-${PROTOBUF_VER}.autogen.sh.patch ]; then
     cp /vagrant/protobuf-${PROTOBUF_VER}.autogen.sh.patch autogen.sh
   fi
   ./autogen.sh
