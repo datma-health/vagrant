@@ -21,7 +21,7 @@ cd $HOME
 # GenomicsDB
 echo 
 echo "Installing GenomicsDB..."
-if [ -d GenomicsDB ]; then
+if [ ! -d GenomicsDB ]; then
   git clone --recursive https://github.com/GenomicsDB/GenomicsDB.git
   pushd GenomicsDB
   git submodule update --recursive --init
