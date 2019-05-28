@@ -7,15 +7,31 @@ if [[ -z $PROTOBUF_LIBRARY ]]; then
   exit -1
 fi
 
+check_rc() {
+  if [[ $# -eq 1 ]]; then
+    if [[ -z $1 ]]; then
+      echo "make returned $1. Quitting GenomicsDB Build"
+      exit $1
+    fi
+  fi
+}
+
 cd $HOME
 
 # GenomicsDB
 echo 
 echo "Installing GenomicsDB..."
-git clone --recursive https://github.com/GenomicsDB/GenomicsDB.git
+if [ -d GenomicsDB ]; then
+  git clone --recursive https://github.com/GenomicsDB/GenomicsDB.git
+  pushd GenomicsDB
+  git submodule update --recursive --init
+  popd
+fi
+if [ ! -d GenomicsDB/build ]; then
+  mkdir -p GenomicsDB/build
+fi
 pushd GenomicsDB
-git submodule update --recursive --init
-mkdir build
+git pull origin master
 pushd build
 
 echo "Building GenomicsDB... "
