@@ -2,28 +2,31 @@
 
 source ~/env-protobuf-3.0.x.sh
 
+if [[ -z $PROTOBUF_LIBRARY ]]; then
+  echo "PROTOBUF_LIBRARY env variable not defined. Exiting build."
+  exit -1
+fi
+
 cd $HOME
 
 # GenomicsDB
 echo 
 echo "Installing GenomicsDB..."
 git clone --recursive https://github.com/GenomicsDB/GenomicsDB.git
-cd GenomicsDB
+pushd GenomicsDB
 git submodule update --recursive --init
 mkdir build
-cd build
+pushd build
 
-if [[ ! -z $PROTOBUF_LIBRARY ]]; then
-  echo "PROTOBUF_LIBRARY env variable not defined. Exiting build."
-  exit -1
-fi
-
-echo "Building GenomicsDB without Cloud Storage support"
-cmake -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE -DCMAKE_INSTALL_PREFIX=$CMAKE_INSTALL_PREFIX -DBUILD_JAVA=1 -D${PROTOBUF_LIBRARY} ..
+echo "Building GenomicsDB... "
+cmake -DCMAKE_INSTALL_PREFIX=~/ -DBUILD_JAVA=1 -DPROTOBUF_LIBRARY=${PROTOBUF_LIBRARY} ..
 
 check_rc $!
 make -j4 && make install
 check_rc $!
+
+popd
+popd
 
 echo "Installing GenomicsDB DONE"
 
