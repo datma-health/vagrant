@@ -3,7 +3,7 @@
 check_rc() {
   if [[ $# -eq 1 ]]; then
     if [[ -z $1 ]]; then
-      echo "make returned $1. Quitting GenomicsDB Build"
+      echo "make returned $1. Quitting Protobuf installation"
       exit $1
     fi
   fi
@@ -40,11 +40,7 @@ install_protobuf() {
   check_rc $!
   echo "export PATH=\$PROTOBUF_LIBRARY/bin:\$PATH" >> ~/env-protobuf-$PROTOBUF_VER.sh
   echo "export LD_LIBRARY_PATH=\$PROTOBUF_LIBRARY/lib:\$LD_LIBRARY_PATH" >> ~/env-protobuf-$PROTOBUF_VER.sh
-  echo "if [[ -z \$C_INCLUDE_PATH ]]; then" >> ~/env-protobuf-$PROTOBUF_VER.sh
-  echo "  export C_INCLUDE_PATH=\$PROTOBUF_LIBRARY/include:\$C_INCLUDE_PATH" >> ~/env-protobuf-$PROTOBUF_VER.sh
-  echo "else" >> ~/env-protobuf-$PROTOBUF_VER.sh
-  echo "  export C_INCLUDE_PATH=\$PROTOBUF_LIBRARY/include" >> ~/env-protobuf-$PROTOBUF_VER.sh
-  echo "fi" >> ~/env-protobuf-$PROTOBUF_VER.sh
+  echo "export C_INCLUDE_PATH=\$PROTOBUF_LIBRARY/include:\$C_INCLUDE_PATH" >> ~/env-protobuf-$PROTOBUF_VER.sh
   echo "Installing Protobuf DONE"
   cd $HOME
 }
