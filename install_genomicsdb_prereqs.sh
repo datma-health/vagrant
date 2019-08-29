@@ -72,7 +72,7 @@ sudo yum -y install centos-release-scl
 sudo yum -y install devtoolset-3
 grep "source /opt/rh/devtoolset-3/enable" ~/.bashrc || echo 'source /opt/rh/devtoolset-3/enable' >> ~/.bashrc
 
-sudo yum -y install autoconf automake libtool curl make g++ unzip
+sudo yum -y install autoconf automake libtool curl libcurl-devel make g++ unzip
 sudo yum -y install mpich-devel
 
 sudo yum -y install epel-release
