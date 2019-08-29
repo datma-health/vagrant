@@ -1,21 +1,5 @@
 #!/bin/bash
 
-die() {
-        if [[ $# -eq 1 ]]; then
-                echo $1
-        fi
-        exit 1
-}
-
-check_rc() {
-        cd $HOME
-        if [[ $# -eq 1 ]]; then
-                if [[ $1 -ne 0 ]]; then
-                        die "command returned $1. Quitting Installation of Intel Zlib"
-                fi
-        fi
-}
-
 die() { 
         if [[ $# -eq 1 ]]; then
                 echo $1
