@@ -8,6 +8,10 @@ CMAKE_INSTALL_PREFIX=$HOME
 
 OPENSSL_VERSION=1.0.2o
 
+pushd `dirname $0`
+VAGRANT_DIR=`pwd`
+popd
+
 check_rc() {
   if [[ $# -eq 1 ]]; then
     if [[ -z $1 ]]; then
@@ -33,11 +37,12 @@ install_protobuf() {
     return 0
   fi
 
+  cd $HOME
   mkdir $PROTOBUF_DIR
   cd $PROTOBUF_DIR
   git clone -b $PROTOBUF_VER --single-branch https://github.com/google/protobuf.git && cd protobuf
-  if [ -f /vagrant/protobuf-${PROTOBUF_VER}.autogen.sh.patch ]; then
-    cp /vagrant/protobuf-${PROTOBUF_VER}.autogen.sh.patch autogen.sh
+  if [ -f $VAGRANT_DIR/vagrant/protobuf-${PROTOBUF_VER}.autogen.sh.patch ]; then
+    cp $VAGRANT_DIR/vagrant/protobuf-${PROTOBUF_VER}.autogen.sh.patch autogen.sh
   fi
   ./autogen.sh
   echo "./configure --prefix=$PROTOBUF_DIR --with-pic"
@@ -57,9 +62,28 @@ install_protobuf() {
   cd $HOME
 }
 
+install_curl() {
+  if [ -f /usr/local/lib/libcurl.a ]; then
+    echo "Curl already installed"
+    return 0
+  fi
+
+  cd $HOME
+
+  echo "Installing CURL..."
+
+  git clone https://github.com/curl/curl.git &&
+  pushd curl &&
+  autoreconf -i &&
+  ./configure --prefix /usr/local --enable-lib-only &&
+  make && sudo make install &&
+  popd &&
+  echo "Installing CURL DONE"
+}
+
 if [ -d $HOME/GenomicsDB ]; then
   echo "GenomicsDB already exists"
-  read -r -p "Press [y/Y] to delete GenomicsDB and continue installing/building" response
+  read -r -p "Press [y/Y] to delete GenomicsDB and continue installing/building\n" response
   if [[ $response =~ ^[yY] ]]; then
     rm -fr $HOME/GenomicsDB
   else
@@ -82,9 +106,10 @@ sudo yum -y install install libssl-dev
 sudo yum -y install openssl-devel zlib-devel libuuid-devel
 sudo yum -y install cmake
 
-# GenomicsDB Prereqs for building target jars
+# GenomicsDB Prereqs for building distributable target jars
 sudo yum -y install libstdc++-static
 sudo yum -y install cmake3
+install_curl
 
 if [ ! -d /usr/local/openssl ]; then
   cd $HOME
@@ -105,21 +130,8 @@ sudo pip install jsondiff
 sudo yum -y install lcov
 sudo yum -y install csv
 
-# Install Goog Test
-if [ ! -f /usr/lib/libgtest.a ]; then
-  cd $HOME
-  wget https://github.com/google/googletest/archive/release-1.7.0.tar.gz
-  tar xf release-1.7.0.tar.gz
-  cd googletest-release-1.7.0
-  cmake . && make
-  sudo mv include/gtest /usr/include/gtest
-  sudo mv libgtest_main.a libgtest.a /usr/lib/
-  cd ..
-  rm -fr googletest-release-1.7.0 release-1.7.0.tar.gz
-fi
-
 # GenomicsDB prerereq - Maven for building Java/Scala/Spark Modules
-if [ ! -d $MAVEN-$MAVEN_VERSION ]; then
+if [ ! -d $HOME/$MAVEN-$MAVEN_VERSION ]; then
   echo 
   echo "Installing Maven..."
   cd $HOME
@@ -142,7 +154,7 @@ cd $HOME
 # GenomicsDB prereq - Protobuf 3.0.x for normal development
 install_protobuf 3.0.x
 
-# GenomicsDB prereq - Protobuf v3.0.0-beta-1 for packaging GenomicsDB jars
+# GenomicsDB prereq - Protobuf v3.0.0-beta-1 for packaging distributable GenomicsDB jars
 install_protobuf v3.0.0-beta-1
 
 read -n 1 -s -r -p "Press any key to continue. This will bring up a new shell with the installed Prerequisites."
